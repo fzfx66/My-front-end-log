@@ -1,0 +1,142 @@
+
+## 对象
+
+创建对象写法；
+*  let obj = {‘name’: ‘frank’, ’age’:18}  (一般写法)
+*  let obj = new Object({‘name’:’frank’})  (规范写法)
+*  console.log({‘name’:’frank’, ‘age’:18})
+
+键名一定是字符串。键名不是标识符，可以包含任意字符（空字符、空格、中文、表情符等）；所有属性名会自动变成字符串；引号可省略，省略后只能写标识符。
+
+如果你想用变量作为属性名，且变量名不被自动替换为字符串，用[ ]：let obj {[a]:111} 。
+
+对象的隐藏属性：JS中每一个对象都有一个隐藏属性，这个隐藏属性储存着其共有属性组成的对象（即原型）的地址。
+
+所有对象的原型也是对象，原型是所有对象的根，原型也有隐藏属性__proto__,原型的原型为null。
+
+{foo: ‘a’} 是对象吗？不是对象。
+
+<br>
+
+### 对象属性的增删改查：
+
+**删除：**
+
+delete obj.xxx 或 delete obj[‘xxx’]
+
+判断key 是否在对象中：‘xxx’ in obj → true/false
+
+obj.xxx === undefined 不能断定‘xxx’是否为obj的属性。（该表达式对空对象也成立）
+
+**查看：**
+
+读对象的属性时，如果使用 [ ] 语法，那么 JS 会先求 [ ] 中表达式的值，注意区分表达式是变量还是常量。如果使用点语法，那么点后面一定是字符串常量。
+
+object.keys(obj)可以得到obj的所有Key，object.values(obj)得到所有值，object.entries(obj)得到所有键值对。console.dir(obj)查看自身所有属性（包括共有属性）。
+
+判断一个属性是自身的还是共有的：obj.hasOwnProperty(‘xxx’)
+
+查看属性：中括号语法→ obj[‘key’]，点语法→ obj.key (新人先把前者用熟)
+
+※obj.name等价于obj[‘name’]，obj.name不等价于obj[name]（这里name是属性名，是字符串不是变量）;
+
+只有当name是变量时，let name=‘frank’ ，obj[name]等价于obj[‘frank’]。
+
+**增改：**
+
+let obj = {name,'tom'} (name 是字符串)
+
+obj['name'] = 'frank'
+
+let key = 'name' ; obj[key] = 'frank'
+
+批量赋值；Object.assign(obj,{age:18, gender:'male'})
+
+**修改原型（不推荐）**
+无法通过自身修改和增加共有属性。如果非要修改原型的共有属性，用Object.prototype.tostring =’xxx’ 。
+
+obj.__proto__ = null ：抹除隐藏属性的地址，将该对象的原型设置为空。
+修改隐藏属性或原型不推荐使用__proto__，推荐使用Object.create 。
+
+e.g  let obj = Object.create(common) 
+
+(common为你设置的拥有一些属性的对象，该对象中有隐藏属性__proto__指向系统设置的原型，重复这样的操作可以得到一个 **原型链** )
+
+<br>
+
+### 构造函数
+
+代码规范：
+* 所有构造函数首字母大写，所有被构造出来的对象首字母小写；
+* new后面的函数，使用名词形式，其他函数一般使用动词开头。
+
+构造函数就是能够构造出对象的函数。推荐两种写法：
+
+```
+function Square(width){
+    this.width = width
+   }
+   Square.prototype.getArea = function(){
+   return this.width * this.width
+   }
+   Square.prototype.getLength = function(){
+   return this.width * 4
+   }
+   let square = new Square(5)
+```
+```
+class Square{
+    costructor(width){
+    this.width = width
+    }
+    getArea(){
+        return this.width * this.width
+    }
+    getLength(){
+        return this.width * 4
+    }
+}
+    let square = new Square(5)
+```
+
+new X() 自动做了四件事：
+* 自动创建空对象
+* 自动为空对象关联原型，原型地址为X.prototype
+* 自动将空对象作为this关键字运行构造函数
+* 自动return this
+构造函数X：X函数本身负责给对象本身添加属性 ；X.prototype对象负责保存对象的共有属性。
+
+### 原型、对象之问
+
+你是谁构造的，你的原型就是谁的prototype属性对应的对象。
+
+原型公式：对象.__proto__ = 其构造函数.prototype
+
+* Object.prototype是哪个函数构造出来的？不知道。
+* Object.prototype的原型是什么？没有原型
+* Object.prototype.__proto__的值是？null。
+* window是谁构造出来的？Window（可以通过constructor属性看出构造者）
+* window.Object是谁构造出来的？window.Function（因为所有函数都是window.Function构造的）
+* window.Function是谁构造出来的？window.Function（浏览器构造了Function，然后指定它的构造者是他自己）
+
+类型是JS数据的分类，四基两空一对象；
+
+类是针对对象的分类，有无数种，常见的有Array、Function、Date、RegExp等
+
+**数组对象：**
+
+let array[1,2,3]
+
+共有对象：‘push’，‘pop’，‘shift’
+
+**函数对象：**
+
+function fn(x,y){return x+y}
+
+let fn =(x,y) =>x+y
+
+let fn = new Function(‘x’,’y’,’return x+y’)
+
+自身属性：‘name’，‘length’
+
+共有属性：‘call’，‘apply’，‘bind’
